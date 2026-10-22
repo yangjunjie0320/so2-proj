@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-"""Planar ethylene: PBE/cc-pVXZ one-body C-C bond orders.
-
-The AO density includes all 16 electrons, including the carbon 1s shells.
-"""
+"""Planar ethylene: PBE/cc-pVDZ one-body C-C bond order (all 16 electrons)."""
 
 import numpy as np
 from pyscf import dft, gto
@@ -20,29 +17,15 @@ mol = gto.M(
         H  -0.92  0.00   1.23
     ''',
     unit='Angstrom',
-    basis='cc-pvdz',  # Change to cc-pvtz or cc-pvqz for a basis comparison.
+    basis='cc-pvdz',  # Also try cc-pvtz or cc-pvqz.
 )
-
 mf = dft.RKS(mol)
 mf.xc = 'PBE'
 mf.grids.level = 4
-mf.conv_tol = 1e-10
-mf.kernel()
+mf.run(conv_tol=1e-10)
 assert mf.converged
 
-# Complete, real, spin-summed AO density.
-dm1 = mf.make_rdm1()
-bond = BondOrder(mol, 0, 1)
-bond.nphi = 64  # Resolve the off-axis hydrogen basis functions.
-bond.pad = 8.0  # bohr; check range and grid convergence as the basis grows.
-
-# Rows and columns: sigma, pi, delta, phi, remainder.
-for partition, cell in [('mulliken', 'full'), ('becke', 'full'), ('becke', 'avg')]:
-    bond.partition = partition
-    bond.cell = cell
-    b1 = bond.one_body(dm1)
-    print(f'\n{partition} / {cell}: B1')
-    print(b1)
-    report = bond.analyze()
-    print('Total = %.10f; sum error = %.2e; overlap error = %.2e' % (
-        report['total'], report['sum_error'], report['diagnostics']['overlap_error']))
+bo = BondOrder(mol, 0, 1, nphi=64, pad=8.0)
+b1 = bo.one_body(mf.make_rdm1())
+print('B1 [sigma, pi, delta, phi, remainder]:\n', b1)
+print('Total:', b1.sum())
