@@ -4,7 +4,7 @@ venv/
 __pycache__/
 *.py[cod]
 
-# Build and packaging output; keep uv.lock for reproducibility
+# Build and packaging output
 build/
 dist/
 .eggs/

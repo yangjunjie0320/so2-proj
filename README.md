@@ -16,13 +16,22 @@ Python 3.13 or newer is required. From a local clone:
 ```bash
 git clone https://github.com/yangjunjie0320/so2-proj.git
 cd so2-proj
-uv sync --extra test
+python -m pip install -e .
 ```
 
-`uv sync --extra test --extra gpaw` adds the optional GPAW 26.7.0 adapter.
+Use `python -m pip install -e '.[test]'` for test dependencies, or
+`python -m pip install -e '.[gpaw]'` for GPAW 26.7.0.
 
 GPAW needs its compiled dependencies and PAW datasets. The ethylene example
 requires H/C PBE datasets discoverable through `gpaw-data` or `GPAW_SETUP_PATH`.
+
+To use the checkout without installing this package, install its dependencies
+first and add the **repository root** (the directory containing `so2_proj/`)
+to `PYTHONPATH`. From that directory:
+
+```bash
+export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
+```
 
 ## API
 
@@ -81,13 +90,13 @@ include **all 16 electrons**. These electronic spaces are not directly equivalen
 - [PySCF CASSCF twisted ethylene](examples/03-pyscf-casscf-twisted-ethylene.py):
   90° singlet π/π* CAS(2,2)/cc-pVDZ B1 and B2, completing seven doubly occupied inactive orbitals.
 
-Run with `uv run python examples/01-pyscf-pbe-ethylene.py` (or another filename).
+Run with `python examples/01-pyscf-pbe-ethylene.py` (or another filename).
 
 ## Checks
 
 ```bash
-uv run pytest -q -m 'not gpaw'
-uv run pytest -q -m gpaw
+python -m pytest -q -m 'not gpaw'
+python -m pytest -q -m gpaw
 ```
 
 Converge the grid and range; inspect `overlap_error` as well as `sum_error`.

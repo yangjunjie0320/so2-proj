@@ -14,8 +14,8 @@ dependencies = ["numpy>=2.2", "scipy>=1.15", "pyscf>=2.8"]
 test = ["pytest>=8"]
 gpaw = ["gpaw==26.7.0"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.setuptools]
+packages = ["so2_proj"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
